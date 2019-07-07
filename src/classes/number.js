@@ -8,7 +8,6 @@ export default class NumberSprite {
         sprite.setScale(1.5);
         this.value = val
         this.name = name
-        this.keep = false;
         this.texture = sprite
     }
     

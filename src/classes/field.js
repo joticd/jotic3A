@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 
-
 export default class Field {
     constructor(scene, name, x, y, index){
         const sprite = scene.add.image(x, y, name);
@@ -13,7 +12,8 @@ export default class Field {
         this.holder = scene.add.sprite(x, y, "numbers", "num2.png");
         this.holder.setScale(2);
         this.holder.setVisible(false);
-        this.index = index
+        this.index = index;
+        this.score = 0
     }
     fieldMethod(x, y, val, fieldArr, affected){
         if(x == this.texture.x && y == this.texture.y){
@@ -23,11 +23,15 @@ export default class Field {
             this.holder.setTexture("numbers", image);
             this.holder.setVisible(true);
             this.calcField(fieldArr, affected)
-                     
         }        
     }
-    calcField(fieldArr, affected){
-        const currentVal = this.value;        
+
+    //calculating current field with neighbor field
+    //creating new sprite for numbers
+    calcField(fieldArr, affected){ 
+        const currentVal = this.value;
+        let countNext = 0;
+        let countCurrent = 0;        
         for(let i = 0; i< this.neighborhood.length; i++){
             let indexN = this.neighborhood[i];
             let nextField = fieldArr[indexN].value;
@@ -40,6 +44,7 @@ export default class Field {
                 const image = `num${nextField/currentVal}.png`;                
                 fieldArr[indexN].holder.setTexture("numbers", image);
                 affected.push(indexN)
+                countNext = countNext+currentVal
             }
             if(nextField !=1 && currentVal%nextField === 0 && nextField<currentVal) {                
                 fieldArr[indexN].value = 1;
@@ -48,7 +53,8 @@ export default class Field {
                 this.value = currentVal/nextField;
                 const image = `num${currentVal/nextField}.png`;
                 this.holder.setTexture("numbers", image);
-                affected.push(this.index)
+                affected.push(this.index);
+                countCurrent = countCurrent+nextField;
             } 
             if(nextField !=1 && currentVal%nextField === 0 && nextField==currentVal) {                
                 fieldArr[indexN].value = 1;
@@ -57,10 +63,14 @@ export default class Field {
                 this.value = 1;
                 this.holder.setVisible(false);
                 this.texture.input.dropZone = true;
-            }   
-            
+                countCurrent = countCurrent+nextField;
+            }  
+           
         }
         
+        let score = countNext + countCurrent
+        this.score = score
+       
     }
 
 
