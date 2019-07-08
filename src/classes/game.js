@@ -67,7 +67,7 @@ export default class GameScene extends Phaser.Scene{
     this.keep = new Keep(this, "field", xx/1.1, yy/1.2);  // keep field  
 
     // Creating numbers
-    for (let i =2; i<21; i++){
+    for (let i =2; i<50; i++){
       const name = `num${i}.png`
       const num = new NumberSprite(this, name, xx-1.1*xx, yy * 0.85, i)
       this.numberArr.push(num);
