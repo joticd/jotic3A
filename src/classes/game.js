@@ -26,6 +26,8 @@ export default class GameScene extends Phaser.Scene{
     this.affectedArr = [];
     this.updateBool = false;
     this.score = 0;
+    this.ready = false;
+    
    
     this.add.image(xx/2, yy/2, "background"); //backgound image  
     
@@ -89,10 +91,12 @@ export default class GameScene extends Phaser.Scene{
     //click for new game
     this.msgButton.on('pointerdown', ()=>{
       this.scene.restart();
+      this.ready = true;
     }); 
 
     this.moveStartNumbers(this.bottomArr, this.numberArr, xx/2); 
-    
+    this.ready = true;
+
     this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
       gameObject.x = dragX;
       gameObject.y = dragY;
@@ -108,7 +112,7 @@ export default class GameScene extends Phaser.Scene{
       let destroy = true // flag for destroying moving number
 
       //putting number on keep field
-      if(gameObject.x === this.keep.texture.x && gameObject.y === this.keep.texture.y ){
+      if(gameObject.x === this.keep.texture.x && gameObject.y === this.keep.texture.y){
         if(!this.keep.taken){
           this.keep.keepMethod(gameObject.x, gameObject.y, lastNum.value)
           gameObject.x = dropZone.x;
@@ -120,14 +124,14 @@ export default class GameScene extends Phaser.Scene{
           gameObject.x = gameObject.input.dragStartX;
           gameObject.y = gameObject.input.dragStartY
         }       
-      } else{
-        destroy = true;        
+      } else{ //putting (FROM keep or LINE OF NUMBERS) to game field
+        destroy = true; 
       }
 
       //putting number from keep field
       let feildVal = 1
       if(gameObject.input.dragStartX === this.keep.texture.x && 
-        gameObject.input.dragStartY === this.keep.texture.y 
+        gameObject.input.dragStartY === this.keep.texture.y
         ){
         this.keep.taken = false        
         this.keep.texture.input.dropZone = true; 
@@ -154,6 +158,7 @@ export default class GameScene extends Phaser.Scene{
         
       })
       if(startNew){
+        this.ready = false;
         this.msgTextVal.setText(""+this.score)
         this.add.tween({
           targets: [this.msgBckg, this.msgText, this.msgTextVal, this.msgButton],
@@ -166,10 +171,10 @@ export default class GameScene extends Phaser.Scene{
     });
     
     this.input.on('dragend', function (pointer, gameObject, dropped) {
-      if (!dropped){
+        if (!dropped){
           gameObject.x = gameObject.input.dragStartX;
           gameObject.y = gameObject.input.dragStartY;
-      }
+        }
     });
   }
 
@@ -274,6 +279,9 @@ export default class GameScene extends Phaser.Scene{
 
   update(){
     (this.affectedArr.length>0) ? this.calc() : null;
+    if(!this.ready){
+      this.input.removeAllListeners();
+    }
   }
 }
 
